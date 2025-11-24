@@ -1,0 +1,92 @@
+@page "/login"
+@inject NavigationManager Nav
+@inject AppDbContext Db
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-16">
+    <MudPaper Elevation="10" Class="pa-6">
+        <MudStack Spacing="2" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4">ChatConnect</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Sign in to continue your conversations
+            </MudText>
+        </MudStack>
+
+        <MudStack Spacing="2" Class="mt-4">
+            <MudTextField @bind-Value="EmailOrPhone"
+                          Label="Email or Phone"
+                          Required="true" />
+
+            <MudTextField @bind-Value="Password"
+                          Label="Password"
+                          InputType="InputType.Password"
+                          Required="true" />
+
+            <MudStack Direction="Row"
+                      Justify="Justify.SpaceBetween"
+                      AlignItems="AlignItems.Center">
+
+                <MudCheckBox T="bool"
+                             @bind-Checked="RememberMe"
+                             Label="Remember me" />
+
+                <MudText Typo="Typo.caption" Color="Color.Primary">
+                    Forgot Password?
+                </MudText>
+            </MudStack>
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="SignIn">
+                Sign In
+            </MudButton>
+
+            <MudDivider>Or</MudDivider>
+
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary">
+                <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="1">
+                    <MudIcon Icon="@Icons.Material.Filled.AccountCircle" />
+                    <MudText>Continue with Google</MudText>
+                </MudStack>
+            </MudButton>
+
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Info">
+                <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="1">
+                    <MudIcon Icon="@Icons.Material.Filled.Facebook" />
+                    <MudText>Continue with Facebook</MudText>
+                </MudStack>
+            </MudButton>
+
+            <MudStack AlignItems="AlignItems.Center" Class="mt-2">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                    Demo users:
+                    sarah@example.com / 123456
+                </MudText>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string EmailOrPhone { get; set; } = "";
+    private string Password { get; set; } = "";
+    private bool RememberMe { get; set; }
+
+    private async Task SignIn()
+    {
+        var user = Db.Users.FirstOrDefault(u => u.EmailOrPhone == EmailOrPhone);
+        if (user is null || !BCrypt.Net.BCrypt.Verify(Password, user.PasswordHash))
+        {
+            Snackbar.Add("Invalid email/phone or password", Severity.Error);
+            return;
+        }
+
+        user.IsOnline = true;
+        user.LastSeen = DateTime.Now;
+        await Db.SaveChangesAsync();
+
+        Nav.NavigateTo($"/chat-dashboard/{user.Id}");
+    }
+}
