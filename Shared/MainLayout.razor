@@ -1,35 +1,38 @@
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="_currentTheme">
-    <MudDialogProvider />
-    <MudSnackbarProvider>
-        <MudLayout>
+<MudThemeProvider Theme="_currentTheme" />
 
-            <MudAppBar Elevation="4">
-                <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="2">
-                    <MudIcon Icon="@Icons.Material.Filled.Chat" />
-                    <MudText Typo="Typo.h6">ChatConnect Ultra</MudText>
-                </MudStack>
-                <MudSpacer />
-                <MudIconButton Icon="@(_darkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
-                               Color="Color.Inherit"
-                               OnClick="ToggleTheme" />
-            </MudAppBar>
+<MudDialogProvider />
 
-            <MudMainContent>
-                @Body
-            </MudMainContent>
+<MudSnackbarProvider />
 
-        </MudLayout>
-    </MudSnackbarProvider>
-</MudThemeProvider>
+<MudLayout>
+
+    <MudAppBar Elevation="4">
+        <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="2">
+            <MudIcon Icon="@Icons.Material.Filled.Chat" />
+            <MudText Typo="Typo.h6">ChatConnect Ultra</MudText>
+        </MudStack>
+
+        <MudSpacer />
+
+        <MudIconButton Icon="@(_darkMode? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                       Color="Color.Inherit"
+                       OnClick="ToggleTheme" />
+    </MudAppBar>
+
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+
+</MudLayout>
 
 @code {
     private bool _darkMode = false;
 
     private MudTheme _lightTheme = new()
     {
-        Palette = new Palette()
+        PaletteLight = new PaletteLight()
         {
             Primary = Colors.Green.Darken2,
             Background = "#f5f7fb",
@@ -39,7 +42,7 @@
 
     private MudTheme _darkTheme = new()
     {
-        Palette = new Palette()
+        PaletteDark = new PaletteDark()
         {
             Primary = Colors.Green.Accent3,
             Background = "#121212",
